@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+<title>YouTube Downloader</title>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #0f172a;
+
+    color: white;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+}
+
+
+.container {
+
+    width: 100%;
+
+    max-width: 750px;
+
+    background: #1e293b;
+
+    padding: 40px;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.45);
+}
+
+
+h1 {
+
+    text-align: center;
+
+    margin-top: 0;
+}
+
+
+.subtitle {
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    margin-bottom: 30px;
+}
+
+
+.form-group {
+
+    margin-bottom: 20px;
+}
+
+
+label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: bold;
+}
+
+
+input,
+select {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    border:
+        1px solid #475569;
+
+    background: #0f172a;
+
+    color: white;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+
+.options {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 15px;
+}
+
+
+button {
+
+    width: 100%;
+
+    padding: 16px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #ef4444;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+button:hover {
+
+    background: #dc2626;
+}
+
+
+button:disabled {
+
+    background: #64748b;
+
+    cursor: not-allowed;
+}
+
+
+/* VIDEO */
+
+#video-info {
+
+    display: none;
+
+    margin-bottom: 20px;
+
+    padding: 15px;
+
+    background: #0f172a;
+
+    border-radius: 12px;
+
+    gap: 18px;
+
+    align-items: center;
+}
+
+
+#thumbnail {
+
+    width: 200px;
+
+    height: 112px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    display: none;
+}
+
+
+#video-title {
+
+    margin: 0 0 10px;
+
+    font-size: 19px;
+}
+
+
+#video-uploader,
+#video-duration,
+#video-views {
+
+    margin: 5px 0;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+
+/* PROGRESS */
+
+#progress-area {
+
+    display: none;
+
+    margin-top: 25px;
+}
+
+
+.progress-info {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom: 8px;
+}
+
+
+.progress-container {
+
+    width: 100%;
+
+    height: 25px;
+
+    background: #0f172a;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+
+.progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #22c55e;
+
+    transition:
+        width .3s ease;
+}
+
+
+#status {
+
+    text-align: center;
+
+    margin-top: 10px;
+
+    color: #94a3b8;
+}
+
+
+/* DOWNLOAD */
+
+#download-link {
+
+    display: none;
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    text-align: center;
+
+    background: #22c55e;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+}
+
+
+/* ERROR */
+
+#error {
+
+    display: none;
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    background: #7f1d1d;
+
+    color: #fecaca;
+
+    border-radius: 10px;
+
+    word-break: break-word;
+}
+
+
+@media(max-width:600px) {
+
+    .container {
+        padding: 25px;
+    }
+
+    .options {
+        grid-template-columns: 1fr;
+    }
+
+    #video-info {
+        flex-direction: column;
+    }
+
+    #thumbnail {
+        width: 100%;
+        height: auto;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>
+🎬 YouTube Downloader
+</h1>
+
+
+<div class="subtitle">
+
+Paste a YouTube link
+
+</div>
+
+
+<form id="download-form">
+
+
+<div class="form-group">
+
+<label>
+
+YouTube Video URL
+
+</label>
+
+
+<input
+
+type="url"
+
+id="url"
+
+name="url"
+
+placeholder=
+"Paste YouTube link here..."
+
+required
+
+>
+
+</div>
+
+
+<!-- VIDEO INFO -->
+
+<div id="video-info">
+
+
+<img
+id="thumbnail"
+src=""
+alt="Thumbnail"
+>
+
+
+<div>
+
+<h2 id="video-title">
+Loading...
+</h2>
+
+<p id="video-uploader"></p>
+
+<p id="video-duration"></p>
+
+<p id="video-views"></p>
+
+</div>
+
+
+</div>
+
+
+<!-- FORMAT + QUALITY -->
+
+<div class="options">
+
+
+<div class="form-group">
+
+<label>
+
+Format
+
+</label>
+
+
+<select
+id="format"
+name="format"
+>
+
+<option value="mp4">
+🎬 MP4
+</option>
+
+<option value="webm">
+🌐 WebM
+</option>
+
+<option value="mp3">
+🎵 MP3 Audio
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label id="quality-label">
+
+Video Quality
+
+</label>
+
+
+<select
+id="quality"
+name="quality"
+>
+
+<option value="best">
+Best Available
+</option>
+
+<option value="1080">
+1080p
+</option>
+
+<option value="720">
+720p
+</option>
+
+<option value="480">
+480p
+</option>
+
+<option value="360">
+360p
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<button
+type="submit"
+id="download-button"
+>
+
+⬇ Download
+
+</button>
+
+
+</form>
+
+
+<!-- PROGRESS -->
+
+<div id="progress-area">
+
+
+<div class="progress-info">
+
+<span id="progress-text">
+0%
+</span>
+
+<span id="speed">
+Starting...
+</span>
+
+</div>
+
+
+<div class="progress-container">
+
+<div
+class="progress-bar"
+id="progress-bar"
+></div>
+
+</div>
+
+
+<div id="status">
+
+Preparing download...
+
+</div>
+
+
+</div>
+
+
+<!-- DOWNLOAD -->
+
+<a
+id="download-link"
+href="#"
+>
+
+⬇ Download Finished File
+
+</a>
+
+
+<!-- ERROR -->
+
+<div id="error"></div>
+
+
+</div>
+
+
+<script>
+
+
+const form =
+document.getElementById(
+    "download-form"
+);
+
+
+const urlInput =
+document.getElementById(
+    "url"
+);
+
+
+const format =
+document.getElementById(
+    "format"
+);
+
+
+const quality =
+document.getElementById(
+    "quality"
+);
+
+
+const qualityLabel =
+document.getElementById(
+    "quality-label"
+);
+
+
+const videoInfo =
+document.getElementById(
+    "video-info"
+);
+
+
+const thumbnail =
+document.getElementById(
+    "thumbnail"
+);
+
+
+const videoTitle =
+document.getElementById(
+    "video-title"
+);
+
+
+const videoUploader =
+document.getElementById(
+    "video-uploader"
+);
+
+
+const videoDuration =
+document.getElementById(
+    "video-duration"
+);
+
+
+const videoViews =
+document.getElementById(
+    "video-views"
+);
+
+
+const button =
+document.getElementById(
+    "download-button"
+);
+
+
+const progressArea =
+document.getElementById(
+    "progress-area"
+);
+
+
+const progressBar =
+document.getElementById(
+    "progress-bar"
+);
+
+
+const progressText =
+document.getElementById(
+    "progress-text"
+);
+
+
+const speed =
+document.getElementById(
+    "speed"
+);
+
+
+const status =
+document.getElementById(
+    "status"
+);
+
+
+const downloadLink =
+document.getElementById(
+    "download-link"
+);
+
+
+const errorBox =
+document.getElementById(
+    "error"
+);
+
+
+// =========================
+// FORMAT CHANGE
+// =========================
+
+format.addEventListener(
+    "change",
+    function() {
+
+        quality.innerHTML = "";
+
+
+        if (
+            format.value ===
+            "mp3"
+        ) {
+
+            qualityLabel.textContent =
+                "MP3 Quality";
+
+
+            const qualities = [
+                ["128", "128 kbps"],
+                ["192", "192 kbps"],
+                ["256", "256 kbps"],
+                ["320", "320 kbps"]
+            ];
+
+
+            qualities.forEach(
+                function(item) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        item[0];
+
+                    option.textContent =
+                        item[1];
+
+                    quality.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+
+        else {
+
+            qualityLabel.textContent =
+                "Video Quality";
+
+
+            const qualities = [
+                ["best", "Best Available"],
+                ["1080", "1080p"],
+                ["720", "720p"],
+                ["480", "480p"],
+                ["360", "360p"]
+            ];
+
+
+            qualities.forEach(
+                function(item) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        item[0];
+
+                    option.textContent =
+                        item[1];
+
+                    quality.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
+
+
+// =========================
+// GET VIDEO INFO
+// =========================
+
+let timer;
+
+
+urlInput.addEventListener(
+    "input",
+    function() {
+
+        clearTimeout(timer);
+
+
+        const url =
+            urlInput.value.trim();
+
+
+        if (!url) {
+
+            videoInfo.style.display =
+                "none";
+
+            return;
+        }
+
+
+        timer = setTimeout(
+            function() {
+
+                getVideoInfo(url);
+
+            },
+            700
+        );
+
+    }
+);
+
+
+async function getVideoInfo(
+    url
+) {
+
+    videoInfo.style.display =
+        "flex";
+
+
+    videoTitle.textContent =
+        "Loading video information...";
+
+
+    thumbnail.style.display =
+        "none";
+
+
+    const data =
+        new FormData();
+
+
+    data.append(
+        "url",
+        url
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/video-info",
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        data
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error
+            );
+
+        }
+
+
+        videoTitle.textContent =
+            result.title;
+
+
+        videoUploader.textContent =
+            result.uploader
+            ? "Channel: " +
+              result.uploader
+            : "";
+
+
+        videoDuration.textContent =
+            result.duration
+            ? "Duration: " +
+              formatDuration(
+                  result.duration
+              )
+            : "";
+
+
+        videoViews.textContent =
+            result.views
+            ? "Views: " +
+              Number(
+                  result.views
+              ).toLocaleString()
+            : "";
+
+
+        if (result.thumbnail) {
+
+            thumbnail.src =
+                result.thumbnail;
+
+            thumbnail.style.display =
+                "block";
+
+        }
+
+    }
+
+    catch (error) {
+
+        videoInfo.style.display =
+            "none";
+
+        console.log(error);
+
+    }
+
+}
+
+
+// =========================
+// DURATION
+// =========================
+
+function formatDuration(
+    seconds
+) {
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+
+    const secs =
+        Math.floor(
+            seconds % 60
+        );
+
+
+    if (hours > 0) {
+
+        return (
+            hours +
+            ":" +
+            String(minutes)
+                .padStart(2, "0") +
+            ":" +
+            String(secs)
+                .padStart(2, "0")
+        );
+
+    }
+
+
+    return (
+        minutes +
+        ":" +
+        String(secs)
+            .padStart(2, "0")
+    );
+
+}
+
+
+// =========================
+// DOWNLOAD
+// =========================
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        errorBox.style.display =
+            "none";
+
+
+        downloadLink.style.display =
+            "none";
+
+
+        progressArea.style.display =
+            "block";
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "Downloading...";
+
+
+        progressBar.style.width =
+            "0%";
+
+
+        progressText.textContent =
+            "0%";
+
+
+        status.textContent =
+            "Starting download...";
+
+
+        const data =
+            new FormData(form);
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/start-download",
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                            data
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error
+                );
+
+            }
+
+
+            checkProgress(
+                result.task_id
+            );
+
+        }
+
+        catch (error) {
+
+            showError(
+                error.message
+            );
+
+        }
+
+    }
+);
+
+
+// =========================
+// PROGRESS
+// =========================
+
+async function checkProgress(
+    taskId
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/progress/${taskId}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status ===
+            "downloading"
+        ) {
+
+            const percent =
+                data.progress || 0;
+
+
+            progressBar.style.width =
+                percent + "%";
+
+
+            progressText.textContent =
+                percent.toFixed(1) +
+                "%";
+
+
+            speed.textContent =
+                data.speed;
+
+
+            status.textContent =
+                "Downloading...";
+
+
+            setTimeout(
+                function() {
+
+                    checkProgress(
+                        taskId
+                    );
+
+                },
+                500
+            );
+
+        }
+
+
+        else if (
+            data.status ===
+            "processing"
+        ) {
+
+            progressBar.style.width =
+                "100%";
+
+
+            progressText.textContent =
+                "100%";
+
+
+            speed.textContent =
+                "Processing";
+
+
+            status.textContent =
+                "Converting file...";
+
+
+            setTimeout(
+                function() {
+
+                    checkProgress(
+                        taskId
+                    );
+
+                },
+                500
+            );
+
+        }
+
+
+        else if (
+            data.status ===
+            "complete"
+        ) {
+
+            progressBar.style.width =
+                "100%";
+
+
+            progressText.textContent =
+                "100%";
+
+
+            speed.textContent =
+                "Complete";
+
+
+            status.textContent =
+                "✅ Finished!";
+
+
+            downloadLink.href =
+                `/file/${taskId}`;
+
+
+            downloadLink.style.display =
+                "block";
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "⬇ Download Another";
+
+        }
+
+
+        else if (
+            data.status ===
+            "error"
+        ) {
+
+            showError(
+                data.error
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        showError(
+            "Could not check download progress."
+        );
+
+    }
+
+}
+
+
+// =========================
+// ERROR
+// =========================
+
+function showError(
+    message
+) {
+
+    errorBox.textContent =
+        "❌ " + message;
+
+
+    errorBox.style.display =
+        "block";
+
+
+    progressArea.style.display =
+        "none";
+
+
+    button.disabled =
+        false;
+
+
+    button.textContent =
+        "⬇ Download";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
